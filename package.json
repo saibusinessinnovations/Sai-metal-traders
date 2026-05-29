@@ -1,0 +1,12 @@
+{
+  "name": "sai-metal-traders-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static Vercel website with RFQ email API for Sai Metal Traders.",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.16"
+  }
+}
