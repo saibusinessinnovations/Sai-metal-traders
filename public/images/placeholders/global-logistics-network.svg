@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07151b"/><stop offset="1" stop-color="#1a342f"/></linearGradient><pattern id="p" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M0 60 L60 0" stroke="#24434b" stroke-width="2" opacity=".45"/></pattern></defs>
+<rect width="1200" height="700" fill="url(#g)"/><rect width="1200" height="700" fill="url(#p)" opacity=".35"/>
+<circle cx="990" cy="110" r="120" fill="#d9a441" opacity=".15"/><circle cx="210" cy="600" r="160" fill="#29d39a" opacity=".10"/>
+<rect x="92" y="105" width="1016" height="490" rx="36" fill="none" stroke="#d9a441" stroke-width="3" opacity=".55"/>
+<text x="600" y="310" text-anchor="middle" fill="#f5fbff" font-family="Arial, sans-serif" font-size="54" font-weight="800">GLOBAL LOGISTICS NETWORK</text>
+<text x="600" y="380" text-anchor="middle" fill="#9db0b8" font-family="Arial, sans-serif" font-size="26">Add your real product photo with this file name</text>
+</svg>
