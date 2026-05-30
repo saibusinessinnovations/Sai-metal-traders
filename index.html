@@ -50,96 +50,34 @@ section{padding:72px 0}.sectionTitle{display:flex;justify-content:space-between;
 <footer class="footer"><div class="wrap">© 2026 Sai Metal Traders. Global metal scrap trading website. Market data shown for reference only and not a binding quote.</div></footer>
 <a class="floatWa" href="https://wa.me/16476731622?text=Hello%20Sai%20Metal%20Traders%2C%20I%20would%20like%20to%20submit%20a%20metal%20scrap%20inquiry." target="_blank" rel="noopener" aria-label="Floating WhatsApp inquiry">WA</a>
 <script>
-  <script>
-const todayDisplay = new Intl.DateTimeFormat('en-US', {
-  month: 'long',
-  day: 'numeric',
-  year: 'numeric'
-}).format(new Date());
-
-document.querySelectorAll('.rateDate').forEach(function(el) {
-  el.textContent = todayDisplay;
-});
-
-document.querySelectorAll('.chartHead span').forEach(function(el) {
-  if (el.textContent.includes('Reference date')) {
-    el.textContent = 'Reference date: ' + todayDisplay;
-  }
-});
-
-const chartTodayValues = {
-  'Aluminium': 'Index: 117',
-  'Copper': 'Index: 115',
-  'Nickel': 'Index: 109',
-  'Steel Scrap': 'Index: 108'
-};
-
-document.querySelectorAll('.chartBox').forEach(function(chart) {
-  const title = chart.querySelector('h3')?.textContent.trim();
-  const svg = chart.querySelector('svg.trend');
-  const dot = chart.querySelector('circle.dot');
-
-  if (!title || !svg || !dot || !chartTodayValues[title]) return;
-
-  const cx = parseFloat(dot.getAttribute('cx'));
-  const cy = parseFloat(dot.getAttribute('cy'));
-  const labelText = chartTodayValues[title];
-
-  const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-  bg.setAttribute('class', 'rateTipBg');
-  bg.setAttribute('x', cx - 82);
-  bg.setAttribute('y', cy - 31);
-  bg.setAttribute('width', 78);
-  bg.setAttribute('height', 22);
-  bg.setAttribute('rx', 8);
-
-  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  text.setAttribute('class', 'rateTip');
-  text.setAttribute('x', cx - 74);
-  text.setAttribute('y', cy - 15);
-  text.textContent = labelText;
-
-  const hoverTitle = document.createElementNS('http://www.w3.org/2000/svg', 'title');
-  hoverTitle.textContent = title + ' current reference value: ' + labelText + ' as of ' + todayDisplay;
-
-  dot.appendChild(hoverTitle);
-  svg.appendChild(bg);
-  svg.appendChild(text);
-});
-  <script>
 document.addEventListener('DOMContentLoaded', function () {
-  /* marketDynamicFix */
   const todayDisplay = new Intl.DateTimeFormat('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric'
   }).format(new Date());
 
-  // Update the main market dashboard date
   document.querySelectorAll('.rateDate').forEach(function (el) {
     el.textContent = todayDisplay;
   });
 
-  // Update each chart's reference date
   document.querySelectorAll('.chartHead span').forEach(function (el) {
     el.textContent = 'Reference date: ' + todayDisplay;
   });
 
-  // Backup replacement for any remaining hardcoded date text
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-  const textNodes = [];
+  const nodes = [];
 
   while (walker.nextNode()) {
-    textNodes.push(walker.currentNode);
+    nodes.push(walker.currentNode);
   }
 
-  textNodes.forEach(function (node) {
+  nodes.forEach(function (node) {
     if (node.nodeValue.includes('May 29, 2026')) {
       node.nodeValue = node.nodeValue.replaceAll('May 29, 2026', todayDisplay);
     }
   });
 
-  // Add visible Today Index label near each final chart dot
   const todayIndexValues = {
     'Aluminium': 'Today Index: 117',
     'Copper': 'Today Index: 115',
@@ -150,12 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelectorAll('.chartBox').forEach(function (chart) {
     const title = chart.querySelector('h3')?.textContent.trim();
     const svg = chart.querySelector('svg.trend');
-    let dot = chart.querySelector('circle.dot');
-
-    if (!dot && svg) {
-      const circles = svg.querySelectorAll('circle');
-      dot = circles[circles.length - 1];
-    }
+    const dot = chart.querySelector('circle.dot');
 
     if (!title || !svg || !dot || !todayIndexValues[title]) return;
     if (svg.querySelector('.todayIndexLabel')) return;
@@ -167,9 +100,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     bg.setAttribute('class', 'todayIndexLabel');
-    bg.setAttribute('x', cx - 132);
+    bg.setAttribute('x', cx - 135);
     bg.setAttribute('y', cy - 38);
-    bg.setAttribute('width', 122);
+    bg.setAttribute('width', 125);
     bg.setAttribute('height', 24);
     bg.setAttribute('rx', 8);
     bg.setAttribute('fill', '#10242d');
@@ -178,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('class', 'todayIndexLabel');
-    label.setAttribute('x', cx - 124);
+    label.setAttribute('x', cx - 127);
     label.setAttribute('y', cy - 22);
     label.setAttribute('fill', '#ffffff');
     label.setAttribute('font-size', '11');
@@ -193,7 +126,6 @@ document.addEventListener('DOMContentLoaded', function () {
     svg.appendChild(label);
   });
 
-  // RFQ form submission
   const form = document.getElementById('rfq');
   const statusBox = document.getElementById('formStatus');
   const submitBtn = document.getElementById('submitBtn');
