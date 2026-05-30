@@ -106,8 +106,9 @@ document.querySelectorAll('.chartBox').forEach(function(chart) {
   svg.appendChild(bg);
   svg.appendChild(text);
 });
+  <script>
+document.addEventListener('DOMContentLoaded', function () {
   /* marketDynamicFix */
-(function () {
   const todayDisplay = new Intl.DateTimeFormat('en-US', {
     month: 'long',
     day: 'numeric',
@@ -124,7 +125,21 @@ document.querySelectorAll('.chartBox').forEach(function(chart) {
     el.textContent = 'Reference date: ' + todayDisplay;
   });
 
-  // Add visible today index label near each final chart dot
+  // Backup replacement for any remaining hardcoded date text
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+
+  while (walker.nextNode()) {
+    textNodes.push(walker.currentNode);
+  }
+
+  textNodes.forEach(function (node) {
+    if (node.nodeValue.includes('May 29, 2026')) {
+      node.nodeValue = node.nodeValue.replaceAll('May 29, 2026', todayDisplay);
+    }
+  });
+
+  // Add visible Today Index label near each final chart dot
   const todayIndexValues = {
     'Aluminium': 'Today Index: 117',
     'Copper': 'Today Index: 115',
@@ -135,7 +150,12 @@ document.querySelectorAll('.chartBox').forEach(function(chart) {
   document.querySelectorAll('.chartBox').forEach(function (chart) {
     const title = chart.querySelector('h3')?.textContent.trim();
     const svg = chart.querySelector('svg.trend');
-    const dot = chart.querySelector('circle.dot');
+    let dot = chart.querySelector('circle.dot');
+
+    if (!dot && svg) {
+      const circles = svg.querySelectorAll('circle');
+      dot = circles[circles.length - 1];
+    }
 
     if (!title || !svg || !dot || !todayIndexValues[title]) return;
     if (svg.querySelector('.todayIndexLabel')) return;
@@ -143,10 +163,12 @@ document.querySelectorAll('.chartBox').forEach(function(chart) {
     const cx = parseFloat(dot.getAttribute('cx'));
     const cy = parseFloat(dot.getAttribute('cy'));
 
+    if (Number.isNaN(cx) || Number.isNaN(cy)) return;
+
     const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     bg.setAttribute('class', 'todayIndexLabel');
     bg.setAttribute('x', cx - 132);
-    bg.setAttribute('y', cy - 36);
+    bg.setAttribute('y', cy - 38);
     bg.setAttribute('width', 122);
     bg.setAttribute('height', 24);
     bg.setAttribute('rx', 8);
@@ -157,7 +179,7 @@ document.querySelectorAll('.chartBox').forEach(function(chart) {
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('class', 'todayIndexLabel');
     label.setAttribute('x', cx - 124);
-    label.setAttribute('y', cy - 20);
+    label.setAttribute('y', cy - 22);
     label.setAttribute('fill', '#ffffff');
     label.setAttribute('font-size', '11');
     label.setAttribute('font-weight', '800');
@@ -170,95 +192,55 @@ document.querySelectorAll('.chartBox').forEach(function(chart) {
     svg.appendChild(bg);
     svg.appendChild(label);
   });
-})();
-const form = document.getElementById('rfq');
-const statusBox = document.getElementById('formStatus');
-const submitBtn = document.getElementById('submitBtn');
-function showStatus(message, type){
-  statusBox.textContent = message;
-  statusBox.className = 'formStatus show ' + (type || '');
-}
-form.addEventListener('submit', async function(event){
-  event.preventDefault();
-  const formData = new FormData(form);
-  const payload = Object.fromEntries(formData.entries());
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Sending RFQ...';
-  showStatus('Submitting your inquiry securely. Please wait.', '');
-  try{
-    const response = await fetch('/api/quote', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
+
+  // RFQ form submission
+  const form = document.getElementById('rfq');
+  const statusBox = document.getElementById('formStatus');
+  const submitBtn = document.getElementById('submitBtn');
+
+  function showStatus(message, type) {
+    if (!statusBox) return;
+    statusBox.textContent = message;
+    statusBox.className = 'formStatus show ' + (type || '');
+  }
+
+  if (form && submitBtn) {
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending RFQ...';
+      showStatus('Submitting your inquiry securely. Please wait.', '');
+
+      try {
+        const response = await fetch('/api/quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json().catch(function () {
+          return {};
+        });
+
+        if (!response.ok || !result.ok) {
+          throw new Error(result.error || 'RFQ could not be submitted.');
+        }
+
+        showStatus('Thank you. Your inquiry has been submitted to Sai Metal Traders and a confirmation email has been sent to you.', 'good');
+        form.reset();
+      } catch (error) {
+        showStatus('Your inquiry could not be submitted automatically. Please email saimetaltraders@gmail.com or WhatsApp +1-647-673-1622.', 'bad');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit RFQ';
+      }
     });
-    const result = await response.json().catch(() => ({}));
-    if(!response.ok || !result.ok){
-      throw new Error(result.error || 'RFQ could not be submitted.');
-    }
-    showStatus('Thank you. Your inquiry has been submitted to Sai Metal Traders and a confirmation email has been sent to you.', 'good');
-    form.reset();
-  }catch(error){
-    showStatus('Your inquiry could not be submitted automatically. Please email saimetaltraders@gmail.com or WhatsApp +1-647-673-1622.', 'bad');
-  }finally{
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Submit RFQ';
   }
 });
 </script>
-  <script>
-(function () {
-  const todayDisplay = new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  }).format(new Date());
-
-  document.body.innerHTML = document.body.innerHTML.replaceAll('May 29, 2026', todayDisplay);
-
-  const todayIndexMap = {
-    'Aluminium': 'Today Index: 117',
-    'Copper': 'Today Index: 115',
-    'Nickel': 'Today Index: 109',
-    'Steel Scrap': 'Today Index: 108'
-  };
-
-  document.querySelectorAll('a.chartBox, .chartBox').forEach(function (card) {
-    const title = card.querySelector('h3')?.textContent.trim();
-    if (!todayIndexMap[title]) return;
-
-    const svg = card.querySelector('svg');
-    const circles = svg ? svg.querySelectorAll('circle') : [];
-    if (!svg || circles.length === 0) return;
-
-    const dot = circles[circles.length - 1];
-    const cx = parseFloat(dot.getAttribute('cx'));
-    const cy = parseFloat(dot.getAttribute('cy'));
-
-    if (svg.querySelector('.todayIndexLabel')) return;
-
-    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    bg.setAttribute('class', 'todayIndexLabel');
-    bg.setAttribute('x', cx - 122);
-    bg.setAttribute('y', cy - 36);
-    bg.setAttribute('width', 112);
-    bg.setAttribute('height', 24);
-    bg.setAttribute('rx', 8);
-    bg.setAttribute('fill', '#10242d');
-    bg.setAttribute('stroke', '#d9a441');
-    bg.setAttribute('stroke-width', '1.2');
-
-    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    label.setAttribute('class', 'todayIndexLabel');
-    label.setAttribute('x', cx - 114);
-    label.setAttribute('y', cy - 20);
-    label.setAttribute('fill', '#ffffff');
-    label.setAttribute('font-size', '11');
-    label.setAttribute('font-weight', '800');
-    label.textContent = todayIndexMap[title];
-
-    svg.appendChild(bg);
-    svg.appendChild(label);
-  });
-})();
-</script>
-</body></html>
+</body>
+</html>
